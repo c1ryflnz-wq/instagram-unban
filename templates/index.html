@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوت استرجاع حسابات إنستغرام</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ استرجاع حساب إنستغرام</h1>
+            <p>صياغة رسالة احترافية لفريق دعم إنستغرام</p>
+        </div>
+
+        <!-- اختيار اللغة -->
+        <div class="card" id="lang-section">
+            <h3>🌐 اختر لغتك</h3>
+            <div class="lang-buttons">
+                <button class="btn lang-btn" onclick="setLang('ar')">🇸🇦 العربية</button>
+                <button class="btn lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+            </div>
+        </div>
+
+        <!-- نموذج البيانات -->
+        <div class="card" id="form-section" style="display:none;">
+            <h3 id="form-title">📝 أدخل بياناتك</h3>
+            
+            <div class="form-group">
+                <label id="label-username">👤 اسم المستخدم (اليوزر):</label>
+                <input type="text" id="username" placeholder="@username">
+            </div>
+
+            <div class="form-group">
+                <label id="label-email">📧 البريد الإلكتروني:</label>
+                <input type="email" id="email" placeholder="email@example.com">
+            </div>
+
+            <div class="form-group">
+                <label id="label-type">🔍 نوع الحظر:</label>
+                <input type="text" id="violation_type" placeholder="مثال: عنف، احتيال، كراهية...">
+            </div>
+
+            <div class="form-group">
+                <label id="label-severity">⚠️ نوع الحظر:</label>
+                <select id="severity">
+                    <option value="light">⚠️ حظر خفيف</option>
+                    <option value="severe">❌❌❌ حظر شديد (ثلاث إكسات)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label id="label-date">📅 تاريخ الحظر:</label>
+                <input type="date" id="ban_date">
+            </div>
+
+            <div class="form-group">
+                <label id="label-prev">❓ هل قدمت طلباً من قبل؟</label>
+                <select id="is_previous">
+                    <option value="no">لا</option>
+                    <option value="yes">نعم</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="case-group" style="display:none;">
+                <label id="label-case">📝 رقم القضية:</label>
+                <input type="text" id="case_number" placeholder="Case Number">
+            </div>
+
+            <button class="btn primary-btn" onclick="generateMessage()">✨ توليد الرسالة</button>
+        </div>
+
+        <!-- النتيجة -->
+        <div class="card" id="result-section" style="display:none;">
+            <h3>✅ رسالتك الاحترافية</h3>
+            <textarea id="result-message" readonly rows="10"></textarea>
+            <div class="result-buttons">
+                <button class="btn" onclick="changeMessage()">🔄 تغيير الصيغة</button>
+                <button class="btn" onclick="copyMessage()">📋 نسخ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
