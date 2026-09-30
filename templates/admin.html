@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header admin-header">
+            <h1>📊 لوحة التحكم</h1>
+            <p>مرحباً، {{ session.get('admin') }} ({{ 'المالك' if role == 'owner' else 'مشرف' }})</p>
+            <a href="/logout" class="btn logout-btn">تسجيل الخروج</a>
+        </div>
+
+        <!-- الإحصائيات -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>👥 المستخدمين</h3>
+                <p class="stat-number">{{ total_users }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>📝 التقديمات</h3>
+                <p class="stat-number">{{ total_subs }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>⏳ بانتظار الموافقة</h3>
+                <p class="stat-number">{{ pending_users|length }}</p>
+            </div>
+        </div>
+
+        <!-- إدارة المشرفين (للمالك فقط) -->
+        {% if role == 'owner' %}
+        <div class="card">
+            <h3>👥 إدارة المشرفين</h3>
+            <form method="POST" action="/add_admin" class="inline-form">
+                <input type="text" name="username" placeholder="اسم المستخدم" required>
+                <input type="password" name="password" placeholder="كلمة المرور" required>
+                <button type="submit" class="btn primary-btn">➕ إضافة مشرف</button>
+            </form>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>المعرف</th>
+                        <th>اسم المستخدم</th>
+                        <th>الدور</th>
+                        <th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for admin in admins %}
+                    <tr>
+                        <td>{{ admin['id'] }}</td>
+                        <td>{{ admin['username'] }}</td>
+                        <td>{{ 'المالك' if admin['role'] == 'owner' else 'مشرف' }}</td>
+                        <td>
+                            {% if admin['role'] != 'owner' %}
+                            <form method="POST" action="/delete_admin/{{ admin['id'] }}" style="display:inline;">
+                                <button type="submit" class="btn danger-btn">🗑️ حذف</button>
+                            </form>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- المستخدمون بانتظار الموافقة -->
+        <div class="card">
+            <h3>⏳ طلبات الموافقة</h3>
+            {% if pending_users %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>المعرف</th>
+                        <th>اليوزر</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in pending_users %}
+                    <tr>
+                        <td>{{ user['telegram_id'] }}</td>
+                        <td>{{ user['telegram_username'] }}</td>
+                        <td>{{ user['requested_at'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>لا توجد طلبات بانتظار الموافقة.</p>
+            {% endif %}
+        </div>
+
+        <!-- التقديمات -->
+        <div class="card">
+            <h3>📝 جميع التقديمات</h3>
+            {% if submissions %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اليوزر</th>
+                        <th>نوع الحظر</th>
+                        <th>الحالة</th>
+                        <th>التاريخ</th>
+                        <th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in submissions %}
+                    <tr>
+                        <td>{{ sub['id'] }}</td>
+                        <td>{{ sub['username'] }}</td>
+                        <td>{{ sub['violation_type'] }}</td>
+                        <td>
+                            <span class="status {{ sub['status'] }}">{{ sub['status'] }}</span>
+                        </td>
+                        <td>{{ sub['submitted_at'] }}</td>
+                        <td>
+                            <form method="POST" action="/update_status/{{ sub['id'] }}/approved" style="display:inline;">
+                                <button type="submit" class="btn small-btn">✅</button>
+                            </form>
+                            <form method="POST" action="/update_status/{{ sub['id'] }}/rejected" style="display:inline;">
+                                <button type="submit" class="btn small-btn danger-btn">❌</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>لا توجد تقديمات بعد.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
